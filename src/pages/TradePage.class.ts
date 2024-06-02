@@ -6,8 +6,8 @@ export class TradePage extends MainWrapper {
   constructor(page: Page) {
     super(page);
     this.new_order_button = this.page.locator(`[id="ic_new_order"]`).locator("..");
-    this.cancel_all_button = this.page.getByText(`Cancel All`);
     this.orders_table_container = this.page.locator(`div[style*="min-height: 170px;"]`);
+    this.cancel_all_button = this.orders_table_container.getByText(/Cancel|Close/);
     this.rows = this.orders_table_container.locator(`div[cache-key*="full-undefined-"]`);
   }
 
@@ -33,12 +33,13 @@ export class TradePage extends MainWrapper {
     await this.orders_table_container.isEnabled();
 
     await test.step("getOrders", async () => {
-      // collecting header cells
+      // collecting header cells scraping from page
       const header = this.orders_table_container.locator(`div[draggable="true"]`);
       (await header.all()).map((locator) => locator.innerText());
 
       for (const locator of await header.all()) {
         const text = await locator.innerText();
+        // filter technical columns with buttons == with no inner text
         if (text.length) {
           table_header_items.push(text);
         }
@@ -55,6 +56,7 @@ export class TradePage extends MainWrapper {
       }
     });
 
+    // create <[header_cell_name]: tabel_body_value>[] from string[][] if possible (equality of arr.length is key)
     return res.map((row: string[]) => {
       if (row.length === table_header_items.length) {
         return row.reduce((sum, curr, index) => {
@@ -62,6 +64,7 @@ export class TradePage extends MainWrapper {
           return sum;
         }, {} as any);
       } else {
+        // or return just plain string[]
         return row;
       }
     });

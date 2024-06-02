@@ -31,8 +31,13 @@ test("main", async ({ page, main, trade_page }) => {
     await reg_page.login({ login: process.env.LOGIN, password: process.env.PASSWORD });
   });
 
-  await test.step("remove existing order just in case", async () => {
+  await test.step("remove existing order just in case from both tables", async () => {
     await main.navigateInLeftMenu("Trade");
+
+    await trade_page.switchOrdersTableTab("Orders");
+    await trade_page.removeAllOrders();
+
+    await trade_page.switchOrdersTableTab("Positions");
     await trade_page.removeAllOrders();
   });
 
@@ -52,4 +57,8 @@ test("main", async ({ page, main, trade_page }) => {
     expect(compare).toBeTruthy();
     console.log("Success!");
   });
+});
+
+test.afterEach(async () => {
+
 });

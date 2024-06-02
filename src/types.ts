@@ -23,3 +23,5 @@ export type LanguageToken =
   | "tr"
   | "vi"
   | "zh";
+
+export type Order = "Market" | "Limit" | "Stop" | "Stop-limit";

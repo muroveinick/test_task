@@ -6,9 +6,8 @@ configDotenv();
 
 export default defineConfig({
   testDir: './tests',
-  globalTimeout: 30000,
+  globalTimeout: 120000,
   fullyParallel: false,
-  forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
@@ -22,10 +21,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
 
     // {
     //   name: 'webkit',

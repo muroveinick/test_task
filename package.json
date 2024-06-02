@@ -1,13 +1,12 @@
 {
   "name": "test_task",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "test task for interview",
+  "author": "A Kladiev",
   "scripts": {
-    "start": "npx playwright test --headed"
+    "start_headed": "npx playwright test --headed  --workers 1",
+    "start": "npx playwright test  --workers 1"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5"

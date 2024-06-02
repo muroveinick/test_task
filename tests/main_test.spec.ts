@@ -1,25 +1,12 @@
 import { test as _test, expect } from "@playwright/test";
-import { delay } from "../src/functions";
 import { MainWrapper } from "../src/pages/MainWrapper.class";
 import { RegistrationModalPage } from "../src/pages/RegistrationModalPage.class";
 import { OrderManageModalPage } from "../src/pages/OrderManageModalPage.class";
 import { TradePage } from "../src/pages/TradePage.class";
+import { FixturePages } from "../src/types";
+import { compareObjects } from "../src/functions";
 
-interface Pages {
-  reg_page: RegistrationModalPage;
-  main: MainWrapper;
-}
-
-export const test = _test.extend<Pages>({
-  // reg_page: async ({ page }, use) => {
-  //   const reg_page = new RegistrationPage(page);
-  //   await reg_page.openUrl(process.env.APP_URL);
-
-  //   await reg_page.toggleNavigationMenu("expand");
-  //   await reg_page.switchLanguage("ru");
-  //   await use(reg_page);
-  // },
-
+export const test = _test.extend<FixturePages>({
   main: async ({ page }, use) => {
     const main_page = new MainWrapper(page);
     await main_page.openUrl(process.env.APP_URL);
@@ -28,38 +15,41 @@ export const test = _test.extend<Pages>({
     await main_page.switchLanguage("en");
     await use(main_page);
   },
+
+  trade_page: async ({ page }, use) => {
+    const trade_page = new TradePage(page);
+    await use(trade_page);
+  },
 });
 
-test("main", async ({ page, main }) => {
+test("main", async ({ page, main, trade_page }) => {
   await test.step("login", async () => {
     await main.hitLogin();
 
     const reg_page = new RegistrationModalPage(page);
-
     await reg_page.switchMode("login");
     await reg_page.login({ login: process.env.LOGIN, password: process.env.PASSWORD });
   });
 
-  await test.step("open new trade", async () => {
-    // return;
+  await test.step("remove existing order just in case", async () => {
     await main.navigateInLeftMenu("Trade");
-    const trade_page = new TradePage(page);
-
     await trade_page.removeAllOrders();
-    // return;
+  });
 
+  await test.step("open new trade", async () => {
     await trade_page.new_order_button.click();
 
     const order_modal = new OrderManageModalPage(page);
     await order_modal.switchTab("Limit");
-    await order_modal.basicOrderPlacement({ stock_name: null, mode: "sell" });
+    await order_modal.basicOrderPlacement({ stock_name: null, mode: "buy" });
   });
 
   await test.step("check orders table", async () => {
-    // await delay(20200);
-    const trade_page = new TradePage(page);
-    const rows = await trade_page.getOrders();
+    await trade_page.switchOrdersTableTab("Orders");
+    const rows = await trade_page.getOrders(),
+      compare = compareObjects(rows[0], { "Order Type": "Limit", Direction: "Buy" });
     expect(rows.length).toEqual(1);
-    console.log(rows.length);
+    expect(compare).toBeTruthy();
+    console.log("Success!");
   });
 });

@@ -11,12 +11,10 @@ export class RegistrationModalPage extends MainWrapper {
 
   async switchMode(mode: "login" | "registration") {
     await test.step("switchMode", async () => {
-      // нет возможности опираться на нормальные селекторы, смотрим на текст внутри
       const selector = mode === "login" ? "Log In" : "Sign Up";
 
       await this.root_container.isEnabled();
-      const div = this.root_container.getByText(selector, { exact: true }); //.last();
-      // console.log(selector);
+      const div = this.root_container.getByText(selector, { exact: true });
 
       await div.click();
     });
@@ -30,7 +28,7 @@ export class RegistrationModalPage extends MainWrapper {
     });
   }
 
-  async register({ login, password }) {
+  async signup({ login, password }) {
     /**
      *
      */

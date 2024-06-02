@@ -1,4 +1,4 @@
-import test, { Locator, Page } from "@playwright/test";
+import { test, Locator, Page } from "@playwright/test";
 import { MainWrapper } from "./MainWrapper.class";
 import { delay } from "../functions";
 
@@ -16,9 +16,10 @@ export class TradePage extends MainWrapper {
   orders_table_container: Locator;
   rows: Locator;
 
-  async switchOrdersTableTab(tab: "Positions" | "Orders" | "History" | "Price Alerts" | "Transactions") {
+  async switchOrdersTableTab(tab_name: "Positions" | "Orders" | "History" | "Price Alerts" | "Transactions") {
     await this.orders_table_container.isEnabled();
-    await this.orders_table_container.getByText(tab, { exact: true }).click();
+    const tab_ = this.orders_table_container.getByText(tab_name);
+    await tab_.click({ timeout: 3000 });
   }
 
   /**
@@ -26,39 +27,40 @@ export class TradePage extends MainWrapper {
    * @returns array of order rows, row: {[header_name]: row cell value} or string[] (splited row innerText)
    */
   async getOrders(): Promise<any[]> {
-    const res = [],
-      table_header_items = [];
+    const res: any[] = [],
+      table_header_items: string[] = [];
 
     await this.orders_table_container.isEnabled();
 
-    // collecting header cells
-    const header = this.orders_table_container.locator(`div[draggable="true"]`);
-    (await header.all()).map((locator) => locator.innerText());
+    await test.step("getOrders", async () => {
+      // collecting header cells
+      const header = this.orders_table_container.locator(`div[draggable="true"]`);
+      (await header.all()).map((locator) => locator.innerText());
 
-    for (const locator of await header.all()) {
-      const text = await locator.innerText();
-      if (text.length) {
-        table_header_items.push(text);
+      for (const locator of await header.all()) {
+        const text = await locator.innerText();
+        if (text.length) {
+          table_header_items.push(text);
+        }
       }
-    }
 
-    const rows = await this.rows.all();
-    // this.page.screenshot({ path: "screenshot.png" });
+      const rows = await this.rows.all();
+      // tricky delay, there is no clear indicators of moment when all data and graphs are loaded so i used hardcode delay
+      await delay(2000);
 
-    await delay(3000);
-
-    for await (const row of rows) {
-      let texts = await row.locator("div > div[tabindex]").first().innerText();
-      texts = texts.split(/[\n]/) as any;
-      res.push(texts);
-    }
+      for await (const row of rows) {
+        let texts = await row.locator("div > div[tabindex]").first().innerText();
+        texts = texts.split(/[\n]/) as any;
+        res.push(texts);
+      }
+    });
 
     return res.map((row: string[]) => {
       if (row.length === table_header_items.length) {
         return row.reduce((sum, curr, index) => {
           sum[table_header_items[index]] = curr;
           return sum;
-        }, {});
+        }, {} as any);
       } else {
         return row;
       }
@@ -79,6 +81,8 @@ export class TradePage extends MainWrapper {
         const yes_button = this.page.locator(`button[type='button']`, { hasText: "Yes" });
         await yes_button.isEnabled({ timeout: 2000 });
         await yes_button.click();
+      } else {
+        console.warn("failed with remove all orders");
       }
     });
   }

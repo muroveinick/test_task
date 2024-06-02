@@ -6,7 +6,7 @@ import { Order } from "../types";
 export class OrderManageModalPage extends MainWrapper {
   constructor(page: Page) {
     super(page);
-    // такой селектор для топового контейнера модалки *Order
+    // use such shaky selector for top modal  *Order container
     this.root_container = this.page.locator(`[style*='width: 550px']`);
 
     this.place_order_button = this.root_container.locator(`button`, { hasText: "Place Order" });
@@ -26,13 +26,12 @@ export class OrderManageModalPage extends MainWrapper {
     await this.root_container.getByText(`${type} Order`, { exact: true }).click();
   }
 
+  // primitive order placement by stock name and mode
   async basicOrderPlacement({ stock_name, mode }: { stock_name: string; mode: "buy" | "sell" }) {
-    // primitive order placement by stock name and mode
-
     await this.root_container.isEnabled();
 
     await test.step("process order data", async () => {
-      // stock_name actually reaaly hard to set because of lack of proper selectors, so skip for now-_-
+      // stock_name actually reaaly hard to set because of lack of proper selectors on that form field, so skip for now-_-
       let mode_button: Locator;
       switch (mode) {
         case "buy":

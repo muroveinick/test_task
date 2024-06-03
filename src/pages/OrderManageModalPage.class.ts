@@ -10,8 +10,8 @@ export class OrderManageModalPage extends MainWrapper {
     this.root_container = this.page.locator(`[style*='width: 550px']`);
 
     this.place_order_button = this.root_container.locator(`button`, { hasText: "Place Order" });
-    this.sell_button = this.root_container.getByText("Sell", { exact: true });
-    this.buy_button = this.root_container.getByText("Buy", { exact: true });
+    this.sell_button = this.root_container.getByText(/^Sell[\n\d\.\\n]{0,}$/);
+    this.buy_button = this.root_container.getByText(/^Buy[\d\.\\n]{0,}$/);
     this.close_modal_button = this.root_container.locator(`[id='ic_cross']`).locator("..");
   }
 

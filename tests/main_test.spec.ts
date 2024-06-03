@@ -45,12 +45,12 @@ test("main", async ({ page, main, trade_page }) => {
     await trade_page.new_order_button.click();
 
     const order_modal = new OrderManageModalPage(page);
-    await order_modal.switchTab("Limit");
+    await order_modal.switchTab("Market");
     await order_modal.basicOrderPlacement({ stock_name: null, mode: "buy" });
   });
 
   await test.step("check orders table", async () => {
-    await trade_page.switchOrdersTableTab("Orders");
+    await trade_page.switchOrdersTableTab("Positions");
     const rows = await trade_page.getOrders(),
       compare = compareObjects(rows[0], { "Order Type": "Limit", Direction: "Buy" });
     expect(rows.length).toEqual(1);
@@ -59,6 +59,4 @@ test("main", async ({ page, main, trade_page }) => {
   });
 });
 
-test.afterEach(async () => {
-
-});
+test.afterEach(async () => {});

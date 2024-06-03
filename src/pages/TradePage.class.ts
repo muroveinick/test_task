@@ -70,7 +70,7 @@ export class TradePage extends MainWrapper {
     });
   }
 
-  async removeAllOrders() {
+  async removeTabOrders() {
     await this.orders_table_container.isEnabled();
     await this.cancel_all_button.click();
 
@@ -88,5 +88,13 @@ export class TradePage extends MainWrapper {
         console.warn("failed with remove all orders");
       }
     });
+  }
+
+  async clearAllOrders() {
+    await this.switchOrdersTableTab("Orders");
+    await this.removeTabOrders();
+
+    await this.switchOrdersTableTab("Positions");
+    await this.removeTabOrders();
   }
 }

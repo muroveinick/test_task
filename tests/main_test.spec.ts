@@ -34,11 +34,7 @@ test("main", async ({ page, main, trade_page }) => {
   await test.step("remove existing order just in case from both tables", async () => {
     await main.navigateInLeftMenu("Trade");
 
-    await trade_page.switchOrdersTableTab("Orders");
-    await trade_page.removeAllOrders();
-
-    await trade_page.switchOrdersTableTab("Positions");
-    await trade_page.removeAllOrders();
+    await trade_page.clearAllOrders();
   });
 
   await test.step("open new trade", async () => {
@@ -59,4 +55,6 @@ test("main", async ({ page, main, trade_page }) => {
   });
 });
 
-test.afterEach(async () => {});
+test.afterEach(async ({ trade_page }) => {
+  await trade_page.clearAllOrders();
+});

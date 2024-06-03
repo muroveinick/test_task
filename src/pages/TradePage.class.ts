@@ -85,7 +85,7 @@ export class TradePage extends MainWrapper {
         await yes_button.isEnabled({ timeout: 2000 });
         await yes_button.click();
       } else {
-        console.warn("failed with remove all orders");
+        // console.warn("failed with remove all orders");
       }
     });
   }
